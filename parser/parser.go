@@ -10,7 +10,7 @@ import (
 var rootToken = token.Token{
 	Id:      0,
 	Parent:  &token.Token{},
-	ElmType: "root",
+	ElmType: token.ROOT,
 	Content: "",
 }
 

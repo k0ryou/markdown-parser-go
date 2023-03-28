@@ -8,6 +8,10 @@ import (
 	"strings"
 )
 
+const (
+	HTML_TAG_REGEXP = `<(.*?)>`
+)
+
 func Generate(asts [][]token.Token) string {
 	htmlStrings := []string{}
 	for _, ast := range asts {
@@ -19,14 +23,14 @@ func Generate(asts [][]token.Token) string {
 			parIdxMap[curToken.Id] = idx
 		}
 		for _, curToken := range rearrangedAst {
-			if curToken.Parent.ElmType != "root" {
+			if curToken.Parent.ElmType != token.ROOT {
 				// 逆順なのでサイズから引く
 				parIdx := parIdxMap[curToken.Parent.Id]
 				parToken := rearrangedAst[parIdx]
 				mergedToken := token.Token{
 					Id:      parToken.Id,
 					Parent:  parToken.Parent,
-					ElmType: "merged",
+					ElmType: token.MERGED,
 					Content: createMergedContent(curToken, parToken),
 				}
 				rearrangedAst[parIdx] = mergedToken
@@ -50,13 +54,13 @@ func Generate(asts [][]token.Token) string {
 func createMergedContent(curToken token.Token, parToken token.Token) string {
 	content := []string{}
 	switch parToken.ElmType {
-	case "li":
+	case token.LIST:
 		content = []string{"<li>", curToken.Content, "</li>"}
-	case "ul":
+	case token.UL:
 		content = []string{"<ul>", curToken.Content, "</ul>"}
-	case "strong":
+	case token.STRONG:
 		content = []string{"<strong>", curToken.Content, "</strong>"}
-	case "merged":
+	case token.MERGED:
 		insertPos := getInsertPos(parToken.Content)
 		content = []string{parToken.Content[0:insertPos], curToken.Content, parToken.Content[insertPos:]}
 	}
@@ -65,7 +69,7 @@ func createMergedContent(curToken token.Token, parToken token.Token) string {
 
 func getInsertPos(content string) int {
 	// 親がmergedの時には必ずhtmlタグが存在するため、それを探索する
-	htmlTagElmRegxp := `<(.*?)>`
+	htmlTagElmRegxp := HTML_TAG_REGEXP
 	re := regexp.MustCompile(htmlTagElmRegxp)
 	htmlTagIndexes := re.FindStringSubmatchIndex(content)
 	insertPos := htmlTagIndexes[1] // htmlタグの終端の位置

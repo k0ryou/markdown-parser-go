@@ -14,12 +14,5 @@ const (
 	MERGED = "merged"
 	UL     = "ul"
 	LIST   = "li"
-
-	// 正規表現
-	STRONG_ELM_REGXP = `\*\*(.*?)\*\*|__(.*?)__`
-	LIST_REGEXP      = `(?m)^( *)([-|\*|\+] (.+))$`
-
-	// リストの状態
-	NEUTRAL_STATE = "neutral_state"
-	LIST_STATE    = "list_state"
+	ROOT   = "root"
 )
