@@ -16,12 +16,22 @@ func GenStrongElement(id int, text string, parent token.Token) token.Token {
 
 func MatchWithStrongRegxp(text string) []int {
 	re := regexp.MustCompile(token.STRONG_ELM_REGXP)
-	return re.FindStringSubmatchIndex(text)
+	return removeMinusVal(re.FindStringSubmatchIndex(text))
 }
 
 func MatchWithListRegxp(text string) []string {
 	re := regexp.MustCompile(token.LIST_REGEXP)
 	return re.FindStringSubmatch(text)
+}
+
+func removeMinusVal(slice []int) []int {
+	res := []int{}
+	for _, val := range slice {
+		if val >= 0 {
+			res = append(res, val)
+		}
+	}
+	return res
 }
 
 func Analize(markdown string) []string {
