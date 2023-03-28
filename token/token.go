@@ -16,7 +16,7 @@ const (
 	LIST   = "li"
 
 	// 正規表現
-	STRONG_ELM_REGXP = `\*\*(.*?)\*\*`
+	STRONG_ELM_REGXP = `\*\*(.*?)\*\*|__(.*?)__`
 	LIST_REGEXP      = `(?m)^( *)([-|\*|\+] (.+))$`
 
 	// リストの状態
