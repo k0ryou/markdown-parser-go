@@ -8,9 +8,10 @@ import (
 
 const (
 	// 正規表現
-	STRONG_ELM_REGXP = `\*\*(.*?)\*\*`
-	UL_ITEM_REGXP    = `(?m)^( *)([-|\*|\+] (.+))$`
-	OL_ITEM_REGXP    = `(?m)^( *)([0-9]+\. (.+))$`
+	STRONG_ELM_REGXP  = `\*\*(.*)\*\*|__(.*)__`
+	UL_ITEM_REGXP     = `(?m)^( *)([-|\*|\+] (.+))$`
+	OL_ITEM_REGXP     = `(?m)^( *)([0-9]+\. (.+))$`
+	PUNCTUATION_REGXP = `\pP`
 
 	// markdownの現在の状態
 	NEUTRAL_STATE = "neutral_state"
@@ -33,7 +34,70 @@ func GenElementToken(id int, text string, parent token.Token, elmType token.Toke
 
 func MatchIndexWithTextElmRegxp(text string, elmType token.TokenType) []int {
 	re := regexp.MustCompile(textRegxpMap[elmType])
-	return removeMinusVal(re.FindStringSubmatchIndex(text))
+	matchIndexList := removeMinusVal(re.FindStringSubmatchIndex(text))
+	if len(matchIndexList) == 0 {
+		return matchIndexList
+	}
+
+	matchTextStartIdx, matchTextEndIdx, innerTextStartIdx, innerTextEndIdx := matchIndexList[0], matchIndexList[1], matchIndexList[2], matchIndexList[3]
+	var leftFrontChr byte = ' '
+	leftBackChr := text[innerTextStartIdx]
+	if 1 <= matchTextStartIdx {
+		leftFrontChr = text[matchTextStartIdx-1]
+	}
+
+	var rightBackChr byte = ' '
+	rightFrontChr := text[innerTextEndIdx-1]
+	if matchTextEndIdx < len(text) {
+		rightBackChr = text[matchTextEndIdx]
+	}
+
+	if !validLeftFlanking(leftFrontChr, leftBackChr) || !validRightFlanking(rightFrontChr, rightBackChr) { // **と__共通
+		return []int{}
+	}
+
+	if text[matchTextStartIdx:innerTextStartIdx] == "__" { // __の場合
+		// open tag
+		if !(!validRightFlanking(leftFrontChr, leftBackChr) || (matchPunctuationChr(string(leftFrontChr)) && (leftBackChr == ' ' || matchPunctuationChr(string(leftBackChr))))) {
+			return []int{}
+		}
+
+		// close tag
+		if !(!validLeftFlanking(rightFrontChr, rightBackChr) || (matchPunctuationChr(string(rightBackChr)) && (rightFrontChr == ' ' || matchPunctuationChr(string(rightFrontChr))))) {
+			return []int{}
+		}
+	}
+
+	return matchIndexList
+}
+
+func validLeftFlanking(leftFrontChr byte, leftBackChr byte) bool {
+	if leftBackChr == ' ' {
+		return false
+	}
+
+	if !(!matchPunctuationChr(string(leftBackChr)) || (matchPunctuationChr(string(leftBackChr)) && (leftFrontChr == ' ' || matchPunctuationChr(string(leftFrontChr))))) {
+		return false
+	}
+
+	return true
+}
+
+func validRightFlanking(rightFrontChr byte, rightBackChr byte) bool {
+	if rightFrontChr == ' ' {
+		return false
+	}
+
+	if !(!matchPunctuationChr(string(rightFrontChr)) || (matchPunctuationChr(string(rightFrontChr)) && (rightBackChr == ' ' || matchPunctuationChr(string(rightBackChr))))) {
+		return false
+	}
+
+	return true
+}
+
+func matchPunctuationChr(chr string) bool {
+	re := regexp.MustCompile(PUNCTUATION_REGXP)
+	return re.MatchString(chr)
 }
 
 func MatchWithListElmRegxp(text string, elmType token.TokenType) []string {
