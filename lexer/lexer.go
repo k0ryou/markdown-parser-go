@@ -10,7 +10,7 @@ const (
 	// 正規表現
 	STRONG_ELM_REGXP = `\*\*(.*?)\*\*|__(.*?)__`
 	UL_ITEM_REGXP    = `(?m)^( *)([-|\*|\+] (.+))$`
-	OL_ITEM_REGXP    = `(?m)^( *)([1-9]\. (.+))$`
+	OL_ITEM_REGXP    = `(?m)^( *)([0-9]+\. (.+))$`
 
 	// markdownの現在の状態
 	NEUTRAL_STATE = "neutral_state"
