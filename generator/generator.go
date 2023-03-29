@@ -24,7 +24,6 @@ func Generate(asts [][]token.Token) string {
 		}
 		for _, curToken := range rearrangedAst {
 			if curToken.Parent.ElmType != token.ROOT {
-				// 逆順なのでサイズから引く
 				parIdx := parIdxMap[curToken.Parent.Id]
 				parToken := rearrangedAst[parIdx]
 				mergedToken := token.Token{
@@ -54,14 +53,14 @@ func Generate(asts [][]token.Token) string {
 func createMergedContent(curToken token.Token, parToken token.Token) string {
 	content := []string{}
 	switch parToken.ElmType {
-	case token.LIST:
+	case token.LIST_ITEM:
 		content = []string{"<li>", curToken.Content, "</li>"}
 	case token.UL:
 		content = []string{"<ul>", curToken.Content, "</ul>"}
+	case token.OL:
+		content = []string{"<ol>", curToken.Content, "</ol>"}
 	case token.STRONG:
 		content = []string{"<strong>", curToken.Content, "</strong>"}
-	case token.EM:
-		content = []string{"<em>", curToken.Content, "</em>"}
 	case token.MERGED:
 		insertPos := getInsertPos(parToken.Content)
 		content = []string{parToken.Content[0:insertPos], curToken.Content, parToken.Content[insertPos:]}

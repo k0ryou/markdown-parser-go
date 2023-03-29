@@ -69,7 +69,7 @@ func tokenizeList(listString string, listType token.TokenType) []token.Token {
 	rootUlToken := token.Token{
 		Id:      id,
 		Parent:  &rootToken,
-		ElmType: token.UL,
+		ElmType: listType,
 		Content: "",
 	}
 	parent := rootUlToken
