@@ -15,8 +15,11 @@ var rootToken = token.Token{
 }
 
 func Parse(markdownRow string) []token.Token {
-	if len(lexer.MatchWithListRegxp(markdownRow)) != 0 {
-		return tokenizeList(markdownRow)
+	if len(lexer.MatchWithUlItemRegxp(markdownRow)) != 0 {
+		return tokenizeList(markdownRow, token.UL)
+	}
+	if len(lexer.MatchWithOlItemRegxp(markdownRow)) != 0 {
+		return tokenizeList(markdownRow, token.OL)
 	}
 	initId := rootToken.Id
 	return tokenizeText(&initId, rootToken, markdownRow)
@@ -61,28 +64,35 @@ func tokenizeText(id *int, p token.Token, text string) []token.Token {
 	return resultElements
 }
 
-func tokenizeList(listString string) []token.Token {
+func tokenizeList(listString string, listType string) []token.Token {
 	id := 1
-	rootUlToken := token.Token{
+	rootListToken := token.Token{
 		Id:      id,
 		Parent:  &rootToken,
-		ElmType: token.UL,
+		ElmType: listType,
 		Content: "",
 	}
-	parent := rootUlToken
-	tokens := []token.Token{rootUlToken}
+	parent := rootListToken
+	tokens := []token.Token{rootListToken}
 
 	listArray := regexp.MustCompile(`\r\n|\r|\n`).Split(listString, -1)
 	for _, list := range listArray {
-		match := lexer.MatchWithListRegxp(list)
+		var match = []string{}
+		if listType == token.UL {
+			match = lexer.MatchWithUlItemRegxp(list)
+		} else {
+			match = lexer.MatchWithOlItemRegxp(list)
+		}
+
 		if len(match) == 0 {
 			continue
 		}
+
 		id++
 		listToken := token.Token{
 			Id:      id,
 			Parent:  &parent,
-			ElmType: token.LIST,
+			ElmType: token.LIST_ITEM,
 			Content: "",
 		}
 		tokens = append(tokens, listToken)

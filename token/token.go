@@ -9,10 +9,11 @@ type Token struct {
 
 const (
 	// tokenの状態
-	TEXT   = "text"
-	STRONG = "strong"
-	MERGED = "merged"
-	UL     = "ul"
-	LIST   = "li"
-	ROOT   = "root"
+	TEXT      = "text"
+	STRONG    = "strong"
+	MERGED    = "merged"
+	UL        = "ul"
+	OL        = "ol"
+	LIST_ITEM = "li"
+	ROOT      = "root"
 )

@@ -9,7 +9,8 @@ import (
 const (
 	// 正規表現
 	STRONG_ELM_REGXP = `\*\*(.*?)\*\*|__(.*?)__`
-	LIST_REGEXP      = `(?m)^( *)([-|\*|\+] (.+))$`
+	UL_ITEM_REGXP    = `(?m)^( *)([-|\*|\+] (.+))$`
+	OL_ITEM_REGXP    = `(?m)^( *)([1-9]\. (.+))$`
 
 	// markdownの現在の状態
 	NEUTRAL_STATE = "neutral_state"
@@ -29,8 +30,13 @@ func MatchWithStrongRegxp(text string) []int {
 	return removeMinusVal(re.FindStringSubmatchIndex(text))
 }
 
-func MatchWithListRegxp(text string) []string {
-	re := regexp.MustCompile(LIST_REGEXP)
+func MatchWithUlItemRegxp(text string) []string {
+	re := regexp.MustCompile(UL_ITEM_REGXP)
+	return re.FindStringSubmatch(text)
+}
+
+func MatchWithOlItemRegxp(text string) []string {
+	re := regexp.MustCompile(OL_ITEM_REGXP)
 	return re.FindStringSubmatch(text)
 }
 
@@ -51,19 +57,18 @@ func Analize(markdown string) []string {
 
 	rawMdArray := regexp.MustCompile(`\r\n|\r|\n`).Split(markdown, -1)
 	for index, md := range rawMdArray {
-		// fmt.Println(md)
-		listMatch := MatchWithListRegxp(md)
-		if state == NEUTRAL_STATE && len(listMatch) != 0 {
+		var isMatchList bool = (len(MatchWithUlItemRegxp(md)) > 0 || len(MatchWithOlItemRegxp(md)) > 0)
+		if state == NEUTRAL_STATE && isMatchList {
 			state = LIST_STATE
 			lists = append(lists, strings.Join([]string{md, "\n"}, ""))
-		} else if state == LIST_STATE && len(listMatch) != 0 {
+		} else if state == LIST_STATE && isMatchList {
 			if index == len(rawMdArray)-1 {
 				lists = append(lists, md)
 				mdArray = append(mdArray, strings.Join(lists, ""))
 			} else {
 				lists = append(lists, strings.Join([]string{md, "\n"}, ""))
 			}
-		} else if state == LIST_STATE && len(listMatch) == 0 {
+		} else if state == LIST_STATE && !isMatchList {
 			state = NEUTRAL_STATE
 			mdArray = append(mdArray, strings.Join(lists, ""))
 			lists = []string{}

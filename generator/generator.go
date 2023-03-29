@@ -54,10 +54,12 @@ func Generate(asts [][]token.Token) string {
 func createMergedContent(curToken token.Token, parToken token.Token) string {
 	content := []string{}
 	switch parToken.ElmType {
-	case token.LIST:
+	case token.LIST_ITEM:
 		content = []string{"<li>", curToken.Content, "</li>"}
 	case token.UL:
 		content = []string{"<ul>", curToken.Content, "</ul>"}
+	case token.OL:
+		content = []string{"<ol>", curToken.Content, "</ol>"}
 	case token.STRONG:
 		content = []string{"<strong>", curToken.Content, "</strong>"}
 	case token.MERGED:
