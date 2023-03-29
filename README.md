@@ -12,5 +12,6 @@ MarkdownをHTMLに変換します。
 - [ ] 見出し
 - [ ] リンク
 
-## 参考にさせて頂いたサイト
+## 参考サイト
 - [マークダウンパーサを作ろう - エムスリーテックブログ](https://www.m3tech.blog/entry/2021/08/23/124000)
+- [GitHub Flavored Markdown Spec](https://github.github.com/gfm/#punctuation-character)
