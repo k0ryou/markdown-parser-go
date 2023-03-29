@@ -15,8 +15,11 @@ var rootToken = token.Token{
 }
 
 func Parse(markdownRow string) []token.Token {
-	if len(lexer.MatchWithListRegxp(markdownRow)) != 0 {
-		return tokenizeList(markdownRow)
+	if len(lexer.MatchWithListElmRegxp(markdownRow, token.UL)) != 0 {
+		return tokenizeList(markdownRow, token.UL)
+	}
+	if len(lexer.MatchWithListElmRegxp(markdownRow, token.OL)) != 0 {
+		return tokenizeList(markdownRow, token.OL)
 	}
 	initId := rootToken.Id
 	return tokenizeText(&initId, rootToken, markdownRow)
@@ -28,11 +31,11 @@ func tokenizeText(id *int, p token.Token, text string) []token.Token {
 	processingText := text
 	parent := p
 	for len(processingText) != 0 {
-		matchIndexes := lexer.MatchWithStrongRegxp(processingText)
+		matchIndexes := lexer.MatchIndexWithTextElmRegxp(processingText, token.STRONG)
 
 		if len(matchIndexes) == 0 {
 			*id++
-			onlyText := lexer.GenTextElement(*id, processingText, parent)
+			onlyText := lexer.GenElementToken(*id, processingText, parent, token.TEXT)
 			processingText = ""
 			resultElements = append(resultElements, onlyText)
 		} else {
@@ -42,14 +45,14 @@ func tokenizeText(id *int, p token.Token, text string) []token.Token {
 			if 0 < matchTextStartIdx {
 				text := processingText[0:matchTextStartIdx]
 				*id++
-				textElm := lexer.GenTextElement(*id, text, parent)
+				textElm := lexer.GenElementToken(*id, text, parent, token.TEXT)
 				resultElements = append(resultElements, textElm)
 				processingText = strings.Replace(processingText, text, "", 1)
 			}
 
 			// 太字
 			*id++
-			elm := lexer.GenStrongElement(*id, "", parent)
+			elm := lexer.GenElementToken(*id, "", parent, token.STRONG)
 			parent = elm
 			resultElements = append(resultElements, elm)
 			processingText = strings.Replace(processingText, matchText, "", 1)
@@ -61,7 +64,7 @@ func tokenizeText(id *int, p token.Token, text string) []token.Token {
 	return resultElements
 }
 
-func tokenizeList(listString string) []token.Token {
+func tokenizeList(listString string, listType token.TokenType) []token.Token {
 	id := 1
 	rootUlToken := token.Token{
 		Id:      id,
@@ -74,7 +77,7 @@ func tokenizeList(listString string) []token.Token {
 
 	listArray := regexp.MustCompile(`\r\n|\r|\n`).Split(listString, -1)
 	for _, list := range listArray {
-		match := lexer.MatchWithListRegxp(list)
+		match := lexer.MatchWithListElmRegxp(list, listType)
 		if len(match) == 0 {
 			continue
 		}
@@ -82,7 +85,7 @@ func tokenizeList(listString string) []token.Token {
 		listToken := token.Token{
 			Id:      id,
 			Parent:  &parent,
-			ElmType: token.LIST,
+			ElmType: token.LIST_ITEM,
 			Content: "",
 		}
 		tokens = append(tokens, listToken)

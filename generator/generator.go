@@ -60,6 +60,8 @@ func createMergedContent(curToken token.Token, parToken token.Token) string {
 		content = []string{"<ul>", curToken.Content, "</ul>"}
 	case token.STRONG:
 		content = []string{"<strong>", curToken.Content, "</strong>"}
+	case token.EM:
+		content = []string{"<em>", curToken.Content, "</em>"}
 	case token.MERGED:
 		insertPos := getInsertPos(parToken.Content)
 		content = []string{parToken.Content[0:insertPos], curToken.Content, parToken.Content[insertPos:]}
