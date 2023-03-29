@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	inputStr := "normal text\n\n0. __boldlist1__\n2. list2\n"
+	inputStr := "text text\n- u -u 1. 2222. 2\n- 1. **strong1.**"
 	fmt.Println(convertToHTMLString(inputStr))
 }
 

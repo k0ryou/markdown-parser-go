@@ -14,7 +14,8 @@ const (
 
 	// markdownの現在の状態
 	NEUTRAL_STATE = "neutral_state"
-	LIST_STATE    = "list_state"
+	UL_STATE      = "ul_state"
+	OL_STATE      = "ol_state"
 )
 
 func GenTextElement(id int, text string, parent token.Token) token.Token {
@@ -51,32 +52,46 @@ func removeMinusVal(slice []int) []int {
 }
 
 func Analize(markdown string) []string {
-	state := NEUTRAL_STATE
+	preState := NEUTRAL_STATE
+	var nowState string
 	lists := []string{}
 	mdArray := []string{}
 
 	rawMdArray := regexp.MustCompile(`\r\n|\r|\n`).Split(markdown, -1)
 	for index, md := range rawMdArray {
-		var isMatchList bool = (len(MatchWithUlItemRegxp(md)) > 0 || len(MatchWithOlItemRegxp(md)) > 0)
-		if state == NEUTRAL_STATE && isMatchList {
-			state = LIST_STATE
-			lists = append(lists, strings.Join([]string{md, "\n"}, ""))
-		} else if state == LIST_STATE && isMatchList {
-			if index == len(rawMdArray)-1 {
-				lists = append(lists, md)
-				mdArray = append(mdArray, strings.Join(lists, ""))
-			} else {
-				lists = append(lists, strings.Join([]string{md, "\n"}, ""))
-			}
-		} else if state == LIST_STATE && !isMatchList {
-			state = NEUTRAL_STATE
-			mdArray = append(mdArray, strings.Join(lists, ""))
-			lists = []string{}
+		var isUlMatch bool = len(MatchWithUlItemRegxp(md)) > 0
+		var isOlMatch bool = len(MatchWithOlItemRegxp(md)) > 0
+
+		if isUlMatch {
+			nowState = UL_STATE
+		} else if isOlMatch {
+			nowState = OL_STATE
+		} else {
+			nowState = NEUTRAL_STATE
 		}
 
-		if len(lists) == 0 {
+		if preState != nowState && len(lists) != 0 {
+			appendLists2MdArray(&mdArray, &lists, md)
+		}
+
+		if nowState == UL_STATE || nowState == OL_STATE {
+			appendListItem2Lists(&mdArray, &lists, md, index == len(rawMdArray)-1)
+		} else {
 			mdArray = append(mdArray, md)
 		}
+		preState = nowState
 	}
 	return mdArray
+}
+
+func appendListItem2Lists(mdArray *[]string, lists *[]string, md string, isLastLine bool) {
+	*lists = append(*lists, strings.Join([]string{md, "\n"}, ""))
+	if isLastLine {
+		appendLists2MdArray(mdArray, lists, md)
+	}
+}
+
+func appendLists2MdArray(mdArray *[]string, lists *[]string, md string) {
+	*mdArray = append(*mdArray, strings.Join(*lists, ""))
+	*lists = []string{}
 }
