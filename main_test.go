@@ -84,6 +84,21 @@ func TestConvertToHTMLString(t *testing.T) {
 			args: args{markdown: "foo-__(bar)__"},
 			want: "foo-<strong>(bar)</strong>",
 		},
+		{
+			name: "list_1",
+			args: args{markdown: "- hoge\n-hoge\n1. hoge\n1.2."},
+			want: "<ul><li>hoge</li></ul>-hoge<ol><li>hoge</li></ol>1.2.",
+		},
+		{
+			name: "list_2",
+			args: args{markdown: "1. hogege- hoge\n- hoge\n- hoge\n - hoge\n1. hoge"},
+			want: "<ol><li>hogege- hoge</li></ol><ul><li>hoge</li><li>hoge</li><li>hoge</li></ul><ol><li>hoge</li></ol>",
+		},
+		{
+			name: "list_3",
+			args: args{markdown: "1. hogege- hoge\n- hoge\n\n\n\n\n- hoge\n       - hoge\n1. hoge"},
+			want: "<ol><li>hogege- hoge</li></ol><ul><li>hoge</li><li>hoge</li><li>hoge</li></ul><ol><li>hoge</li></ol>",
+		},
 	}
 
 	for _, tt := range tests {
