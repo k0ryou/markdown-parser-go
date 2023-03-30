@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+const (
+	EOL_REGXP = `\r\n|\r|\n`
+)
+
 var rootToken = token.Token{
 	Id:      0,
 	Parent:  &token.Token{},
@@ -75,7 +79,7 @@ func tokenizeList(listString string, listType token.TokenType) []token.Token {
 	parent := rootUlToken
 	tokens := []token.Token{rootUlToken}
 
-	listArray := regexp.MustCompile(`\r\n|\r|\n`).Split(listString, -1)
+	listArray := regexp.MustCompile(EOL_REGXP).Split(listString, -1)
 	for _, list := range listArray {
 		match := lexer.MatchWithListElmRegxp(list, listType)
 		if len(match) == 0 {
