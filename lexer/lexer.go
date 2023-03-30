@@ -12,6 +12,7 @@ const (
 	UL_ITEM_REGXP     = `(?m)^( *)([-|\*|\+] (.+))$`
 	OL_ITEM_REGXP     = `(?m)^( *)([0-9]+\. (.+))$`
 	PUNCTUATION_REGXP = `\pP`
+	EOL_REGXP         = `[\r\n|\r|\n]+` // 複数行の空白に対応
 
 	// markdownの現在の状態
 	NEUTRAL_STATE = "neutral_state"
@@ -121,7 +122,7 @@ func Analize(markdown string) []string {
 	lists := []string{}
 	mdArray := []string{}
 
-	rawMdArray := regexp.MustCompile(`\r\n|\r|\n`).Split(markdown, -1)
+	rawMdArray := regexp.MustCompile(EOL_REGXP).Split(markdown, -1)
 	for index, md := range rawMdArray {
 		var isUlMatch bool = len(MatchWithListElmRegxp(md, token.UL)) > 0
 		var isOlMatch bool = len(MatchWithListElmRegxp(md, token.OL)) > 0
