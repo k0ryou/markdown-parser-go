@@ -1,6 +1,7 @@
 # markdown-parser-go  
-Github Flavored Markdownに対応したMarkdownのパーサです。  
-MarkdownをHTMLに変換します。  
+Markdown形式のテキストをHTML形式へ変換します。  
+GitHub Flavored MarkdownやGitLab Flavored Markdownなど様々な方言が存在しますが、独自の方言を実装します。  
+そのため、他の方言と書き方が異なる場合があります。 
 
 ## 使用技術
 - Go 1.20.2
@@ -14,4 +15,3 @@ MarkdownをHTMLに変換します。
 
 ## 参考サイト
 - [マークダウンパーサを作ろう - エムスリーテックブログ](https://www.m3tech.blog/entry/2021/08/23/124000)
-- [GitHub Flavored Markdown Spec](https://github.github.com/gfm/#punctuation-character)
