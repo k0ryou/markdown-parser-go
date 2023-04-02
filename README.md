@@ -6,6 +6,13 @@ GitHub Flavored MarkdownやGitLab Flavored Markdownなど様々な方言が存�
 ## 使用技術
 - Go 1.20.2
 
+## 対応状況
+- [x] 強調(strong)
+- [x] 箇条書きリスト(ul)
+- [x] 順序付きリスト(ol)
+- [x] 見出し
+- [x] リンク
+
 ## 使用方法
 1. dockerコンテナの起動  
 以下のコマンドを実行するとdockerコンテナが起動します。  
@@ -33,13 +40,6 @@ POSTmanなどのアプリを使ってリクエストを送信することも可�
 ```bash
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"Content": "{markdown text}"}' http://localhost:8081/convertmd
 ```
-
-## 対応状況
-- [x] 強調(strong)
-- [x] 箇条書きリスト(ul)
-- [x] 順序付きリスト(ol)
-- [x] 見出し
-- [x] リンク
 
 ## 参考サイト
 - [マークダウンパーサを作ろう - エムスリーテックブログ](https://www.m3tech.blog/entry/2021/08/23/124000)
