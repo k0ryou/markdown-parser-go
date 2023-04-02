@@ -139,6 +139,36 @@ func TestConvertToHTMLString(t *testing.T) {
 			args: args{markdown: "1. # hoge"},
 			want: "<ol><li><h1>hoge</h1></li></ol>",
 		},
+		{
+			name: "a_1",
+			args: args{markdown: "[hoge](hoge.com)"},
+			want: "<a href='hoge.com'>hoge</a>",
+		},
+		{
+			name: "a_2",
+			args: args{markdown: "- [hoge](hoge.com)"},
+			want: "<ul><li><a href='hoge.com'>hoge</a></li></ul>",
+		},
+		{
+			name: "a_3",
+			args: args{markdown: "**[hoge](hoge.com)**"},
+			want: "<strong><a href='hoge.com'>hoge</a></strong>",
+		},
+		{
+			name: "a_4",
+			args: args{markdown: "1. **[hoge](hoge.com)**"},
+			want: "<ol><li><strong><a href='hoge.com'>hoge</a></strong></li></ol>",
+		},
+		{
+			name: "a_5",
+			args: args{markdown: "[#h1](hoge.com)"},
+			want: "<a href='hoge.com'>#h1</a>",
+		},
+		{
+			name: "a_6",
+			args: args{markdown: "[hoge](#hoge)"},
+			want: "<a href='#hoge'>hoge</a>",
+		},
 	}
 
 	for _, tt := range tests {
