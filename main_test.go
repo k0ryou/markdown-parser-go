@@ -11,7 +11,6 @@ func TestConvertToHTMLString(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		// listの要素はそれぞれに改行文字を付与する
 		want string
 	}{
 		{

@@ -2,6 +2,7 @@ package token
 
 type TokenType string
 
+// 抽象構文木のノード
 type Token struct {
 	Id      int
 	Parent  *Token
@@ -9,6 +10,7 @@ type Token struct {
 	Content string
 }
 
+// ノードの種類
 const (
 	TEXT      = "text"
 	STRONG    = "strong"
