@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  golang:
+    image: golang:latest
+    ports:
+      - "8081:8081"
+    tty: true
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    container_name: markdown-parser-go
