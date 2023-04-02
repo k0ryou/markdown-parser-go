@@ -11,6 +11,7 @@ const (
 	STRONG_ELM_REGXP  = `\*\*(.*)\*\*|__(.*)__`
 	UL_ITEM_REGXP     = `(?m)^( *)([-|\*|\+] (.+))$`
 	OL_ITEM_REGXP     = `(?m)^( *)([0-9]+\. (.+))$`
+	HEADER_REGXP      = `(?m)^( *)(#+ (.+))$`
 	PUNCTUATION_REGXP = `\pP`
 	EOL_REGXP         = `[\r\n|\r|\n]+` // 複数行の空白に対応
 
@@ -72,48 +73,14 @@ func MatchIndexWithTextElmRegxp(text string, elmType token.TokenType) []int {
 	return matchIndexList
 }
 
-func validLeftFlanking(leftFrontChr byte, leftBackChr byte) bool {
-	if leftBackChr == ' ' {
-		return false
-	}
-
-	if !(!matchPunctuationChr(string(leftBackChr)) || (matchPunctuationChr(string(leftBackChr)) && (leftFrontChr == ' ' || matchPunctuationChr(string(leftFrontChr))))) {
-		return false
-	}
-
-	return true
-}
-
-func validRightFlanking(rightFrontChr byte, rightBackChr byte) bool {
-	if rightFrontChr == ' ' {
-		return false
-	}
-
-	if !(!matchPunctuationChr(string(rightFrontChr)) || (matchPunctuationChr(string(rightFrontChr)) && (rightBackChr == ' ' || matchPunctuationChr(string(rightBackChr))))) {
-		return false
-	}
-
-	return true
-}
-
-func matchPunctuationChr(chr string) bool {
-	re := regexp.MustCompile(PUNCTUATION_REGXP)
-	return re.MatchString(chr)
-}
-
 func MatchWithListElmRegxp(text string, elmType token.TokenType) []string {
 	re := regexp.MustCompile(listRegxpMap[elmType])
 	return re.FindStringSubmatch(text)
 }
 
-func removeMinusVal(slice []int) []int {
-	res := []int{}
-	for _, val := range slice {
-		if val >= 0 {
-			res = append(res, val)
-		}
-	}
-	return res
+func MatchWithHeaderElmRegxp(text string) []string {
+	re := regexp.MustCompile(HEADER_REGXP)
+	return re.FindStringSubmatch(text)
 }
 
 func Analize(markdown string) []string {
@@ -159,4 +126,43 @@ func appendListItem2Lists(mdArray *[]string, lists *[]string, md string, isLastL
 func appendLists2MdArray(mdArray *[]string, lists *[]string, md string) {
 	*mdArray = append(*mdArray, strings.Join(*lists, ""))
 	*lists = []string{}
+}
+
+func validLeftFlanking(leftFrontChr byte, leftBackChr byte) bool {
+	if leftBackChr == ' ' {
+		return false
+	}
+
+	if !(!matchPunctuationChr(string(leftBackChr)) || (matchPunctuationChr(string(leftBackChr)) && (leftFrontChr == ' ' || matchPunctuationChr(string(leftFrontChr))))) {
+		return false
+	}
+
+	return true
+}
+
+func validRightFlanking(rightFrontChr byte, rightBackChr byte) bool {
+	if rightFrontChr == ' ' {
+		return false
+	}
+
+	if !(!matchPunctuationChr(string(rightFrontChr)) || (matchPunctuationChr(string(rightFrontChr)) && (rightBackChr == ' ' || matchPunctuationChr(string(rightBackChr))))) {
+		return false
+	}
+
+	return true
+}
+
+func matchPunctuationChr(chr string) bool {
+	re := regexp.MustCompile(PUNCTUATION_REGXP)
+	return re.MatchString(chr)
+}
+
+func removeMinusVal(slice []int) []int {
+	res := []int{}
+	for _, val := range slice {
+		if val >= 0 {
+			res = append(res, val)
+		}
+	}
+	return res
 }

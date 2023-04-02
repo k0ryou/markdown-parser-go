@@ -99,6 +99,46 @@ func TestConvertToHTMLString(t *testing.T) {
 			args: args{markdown: "1. hogege- hoge\n- hoge\n\n\n\n\n- hoge\n       - hoge\n1. hoge"},
 			want: "<ol><li>hogege- hoge</li></ol><ul><li>hoge</li><li>hoge</li><li>hoge</li></ul><ol><li>hoge</li></ol>",
 		},
+		{
+			name: "header_1",
+			args: args{markdown: "# hoge - list"},
+			want: "<h1>hoge - list</h1>",
+		},
+		{
+			name: "header_2",
+			args: args{markdown: "## hoge ## hogehoge"},
+			want: "<h2>hoge ## hogehoge</h2>",
+		},
+		{
+			name: "header_3",
+			args: args{markdown: "- hoge # hoge"},
+			want: "<ul><li>hoge # hoge</li></ul>",
+		},
+		{
+			name: "header_4",
+			args: args{markdown: "- ### hoge"},
+			want: "<ul><li><h3>hoge</h3></li></ul>",
+		},
+		{
+			name: "header_5",
+			args: args{markdown: "**# hoge**"},
+			want: "<strong># hoge</strong>",
+		},
+		{
+			name: "header_6",
+			args: args{markdown: "# **hoge**"},
+			want: "<h1><strong>hoge</strong></h1>",
+		},
+		{
+			name: "header_7",
+			args: args{markdown: "####### hoge"},
+			want: "####### hoge",
+		},
+		{
+			name: "header_8",
+			args: args{markdown: "1. # hoge"},
+			want: "<ol><li><h1>hoge</h1></li></ol>",
+		},
 	}
 
 	for _, tt := range tests {

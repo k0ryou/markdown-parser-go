@@ -8,7 +8,10 @@ import (
 )
 
 const (
-	EOL_REGXP = `\r\n|\r|\n`
+	EOL_REGXP   = `\r\n|\r|\n`
+	BLANK_REGXP = `[\s]+`
+
+	MAX_SHARP_LEN = 6
 )
 
 var rootToken = token.Token{
@@ -26,6 +29,9 @@ func Parse(markdownRow string) []token.Token {
 		return tokenizeList(markdownRow, token.OL)
 	}
 	initId := rootToken.Id
+	if matchHeaderList := lexer.MatchWithHeaderElmRegxp(markdownRow); isHeader(matchHeaderList) {
+		return tokenizeHeader(&initId, rootToken, markdownRow, matchHeaderList)
+	}
 	return tokenizeText(&initId, rootToken, markdownRow)
 }
 
@@ -94,10 +100,49 @@ func tokenizeList(listString string, listType token.TokenType) []token.Token {
 		}
 		tokens = append(tokens, listToken)
 		listInnerText := match[3]
-		listText := tokenizeText(&id, listToken, listInnerText)
+		var listText []token.Token
+		if matchHeaderList := lexer.MatchWithHeaderElmRegxp(listInnerText); isHeader(matchHeaderList) {
+			listText = tokenizeHeader(&id, listToken, listInnerText, matchHeaderList)
+		} else {
+			listText = tokenizeText(&id, listToken, listInnerText)
+		}
+		// TODO: ここの挙動確認 id加算する必要あるか
 		id += len(listText)
 		tokens = append(tokens, listText...)
 	}
 
 	return tokens
+}
+
+func tokenizeHeader(id *int, parent token.Token, listString string, matchHeaderList []string) []token.Token {
+	matchHeader := matchHeaderList[0]
+	headerInnerText := matchHeaderList[3]
+
+	sharpLen := len(regexp.MustCompile(BLANK_REGXP).Split(matchHeader, -1)[0])
+	headerToken := token.HeaderTypeMap[sharpLen]
+
+	*id++
+	rootHeaderToken := token.Token{
+		Id:      *id,
+		Parent:  &parent,
+		ElmType: headerToken,
+		Content: "",
+	}
+	tokens := []token.Token{rootHeaderToken}
+	listText := tokenizeText(id, rootHeaderToken, headerInnerText)
+	tokens = append(tokens, listText...)
+
+	return tokens
+}
+
+func isHeader(matchHeaderList []string) bool {
+	if len(matchHeaderList) == 0 {
+		return false
+	}
+
+	matchHeader := matchHeaderList[0]
+
+	sharpLen := len(regexp.MustCompile(BLANK_REGXP).Split(matchHeader, -1)[0])
+
+	return (0 < sharpLen && sharpLen <= MAX_SHARP_LEN)
 }

@@ -10,7 +10,6 @@ type Token struct {
 }
 
 const (
-	// tokenの状態
 	TEXT      = "text"
 	STRONG    = "strong"
 	MERGED    = "merged"
@@ -18,4 +17,19 @@ const (
 	OL        = "ol"
 	LIST_ITEM = "li"
 	ROOT      = "root"
+	H1        = "h1"
+	H2        = "h2"
+	H3        = "h3"
+	H4        = "h4"
+	H5        = "h5"
+	H6        = "h6"
 )
+
+var HeaderTypeMap = map[int]TokenType{
+	1: H1,
+	2: H2,
+	3: H3,
+	4: H4,
+	5: H5,
+	6: H6,
+}
