@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	inputStr := "- # header ## hoge"
+	inputStr := "[hoge](hoge.com)"
 	fmt.Println(convertToHTMLString(inputStr))
 }
 

@@ -14,16 +14,13 @@ const (
 	HEADER_REGXP      = `(?m)^( *)(#+ (.+))$`
 	PUNCTUATION_REGXP = `\pP`
 	EOL_REGXP         = `[\r\n|\r|\n]+` // 複数行の空白に対応
+	ANCHOR_REGXP      = `\[(.+)\]\((.+)\)`
 
 	// markdownの現在の状態
 	NEUTRAL_STATE = "neutral_state"
 	UL_STATE      = "ul_state"
 	OL_STATE      = "ol_state"
 )
-
-var textRegxpMap = map[token.TokenType]string{
-	token.STRONG: STRONG_ELM_REGXP,
-}
 
 var listRegxpMap = map[token.TokenType]string{
 	token.UL: UL_ITEM_REGXP,
@@ -34,8 +31,8 @@ func GenElementToken(id int, text string, parent token.Token, elmType token.Toke
 	return token.Token{Id: id, Parent: &parent, ElmType: elmType, Content: text}
 }
 
-func MatchIndexWithTextElmRegxp(text string, elmType token.TokenType) []int {
-	re := regexp.MustCompile(textRegxpMap[elmType])
+func MatchIndexWithStrongElmRegxp(text string) []int {
+	re := regexp.MustCompile(STRONG_ELM_REGXP)
 	matchIndexList := removeMinusVal(re.FindStringSubmatchIndex(text))
 	if len(matchIndexList) == 0 {
 		return matchIndexList
@@ -70,6 +67,12 @@ func MatchIndexWithTextElmRegxp(text string, elmType token.TokenType) []int {
 		}
 	}
 
+	return matchIndexList
+}
+
+func MatchIndexWithAnchorElmRegxp(text string) []int {
+	re := regexp.MustCompile(ANCHOR_REGXP)
+	matchIndexList := removeMinusVal(re.FindStringSubmatchIndex(text))
 	return matchIndexList
 }
 

@@ -23,6 +23,8 @@ const (
 	H4        = "h4"
 	H5        = "h5"
 	H6        = "h6"
+	A         = "a"
+	A_HREF    = "a_href"
 )
 
 var HeaderTypeMap = map[int]TokenType{

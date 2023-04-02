@@ -41,15 +41,11 @@ func tokenizeText(id *int, p token.Token, text string) []token.Token {
 	processingText := text
 	parent := p
 	for len(processingText) != 0 {
-		matchIndexes := lexer.MatchIndexWithTextElmRegxp(processingText, token.STRONG)
+		matchStrongIndexes := lexer.MatchIndexWithStrongElmRegxp(processingText)
+		matchAnchorIndexes := lexer.MatchIndexWithAnchorElmRegxp(processingText)
 
-		if len(matchIndexes) == 0 {
-			*id++
-			onlyText := lexer.GenElementToken(*id, processingText, parent, token.TEXT)
-			processingText = ""
-			resultElements = append(resultElements, onlyText)
-		} else {
-			matchTextStartIdx, matchTextEndIdx, innerTextStartIdx, innerTextEndIdx := matchIndexes[0], matchIndexes[1], matchIndexes[2], matchIndexes[3]
+		if len(matchStrongIndexes) != 0 { // 太字の要素
+			matchTextStartIdx, matchTextEndIdx, innerTextStartIdx, innerTextEndIdx := matchStrongIndexes[0], matchStrongIndexes[1], matchStrongIndexes[2], matchStrongIndexes[3]
 			matchText, innerText := processingText[matchTextStartIdx:matchTextEndIdx], processingText[innerTextStartIdx:innerTextEndIdx]
 			// 先頭の通常文字
 			if 0 < matchTextStartIdx {
@@ -68,6 +64,39 @@ func tokenizeText(id *int, p token.Token, text string) []token.Token {
 			processingText = strings.Replace(processingText, matchText, "", 1)
 			resultElements = append(resultElements, tokenizeText(id, parent, innerText)...)
 			parent = p
+		} else if len(matchAnchorIndexes) != 0 { // aタグの要素
+			matchAnchorStartIdx, matchAnchorEndIdx, innerTextStartIdx, innerTextEndIdx, hrefTextStartIdx, hrefTextEndIdx := matchAnchorIndexes[0], matchAnchorIndexes[1], matchAnchorIndexes[2], matchAnchorIndexes[3], matchAnchorIndexes[4], matchAnchorIndexes[5]
+			// [anchorInnerText](hrefText)
+			matchAnchorText, anchorInnerText, hrefText := processingText[matchAnchorStartIdx:matchAnchorEndIdx], processingText[innerTextStartIdx:innerTextEndIdx], processingText[hrefTextStartIdx:hrefTextEndIdx]
+
+			if 0 < matchAnchorStartIdx {
+				text := processingText[0:matchAnchorStartIdx]
+				*id++
+				textElm := lexer.GenElementToken(*id, text, parent, token.TEXT)
+				resultElements = append(resultElements, textElm)
+				processingText = strings.Replace(processingText, text, "", 1)
+			}
+
+			*id++
+			elm := lexer.GenElementToken(*id, "", parent, token.A)
+			parent = elm
+			resultElements = append(resultElements, elm)
+			processingText = strings.Replace(processingText, matchAnchorText, "", 1)
+
+			// append hrefText
+			*id++
+			hrefEml := lexer.GenElementToken(*id, hrefText, parent, token.A_HREF)
+			resultElements = append(resultElements, hrefEml)
+			processingText = strings.Replace(processingText, hrefText, "", 1)
+
+			// append anchorInnerText
+			resultElements = append(resultElements, tokenizeText(id, parent, anchorInnerText)...)
+			parent = p
+		} else {
+			*id++
+			onlyText := lexer.GenElementToken(*id, processingText, parent, token.TEXT)
+			processingText = ""
+			resultElements = append(resultElements, onlyText)
 		}
 	}
 

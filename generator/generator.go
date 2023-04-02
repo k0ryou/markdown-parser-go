@@ -10,6 +10,7 @@ import (
 
 const (
 	HTML_TAG_REGEXP = `<(.*?)>`
+	HREF_REGEXP     = `<a href='`
 )
 
 func Generate(asts [][]token.Token) string {
@@ -73,18 +74,25 @@ func createMergedContent(curToken token.Token, parToken token.Token) string {
 		content = []string{"<h5>", curToken.Content, "</h5>"}
 	case token.H6:
 		content = []string{"<h6>", curToken.Content, "</h6>"}
+	case token.A:
+		content = []string{"<a href=''>", curToken.Content, "</a>"}
 	case token.MERGED:
-		insertPos := getInsertPos(parToken.Content)
+		insertPos := getInsertPos(parToken.Content, curToken.ElmType)
 		content = []string{parToken.Content[0:insertPos], curToken.Content, parToken.Content[insertPos:]}
 	}
 	return strings.Join(content, "")
 }
 
-func getInsertPos(content string) int {
-	// 親がmergedの時には必ずhtmlタグが存在するため、それを探索する
-	htmlTagElmRegxp := HTML_TAG_REGEXP
-	re := regexp.MustCompile(htmlTagElmRegxp)
+func getInsertPos(content string, curElmType token.TokenType) int {
+	var searchRegexp string
+	if curElmType == token.A_HREF {
+		searchRegexp = HREF_REGEXP
+	} else {
+		searchRegexp = HTML_TAG_REGEXP
+	}
+	re := regexp.MustCompile(searchRegexp)
 	htmlTagIndexes := re.FindStringSubmatchIndex(content)
-	insertPos := htmlTagIndexes[1] // htmlタグの終端の位置
+	insertPos := htmlTagIndexes[1]
+
 	return insertPos
 }
