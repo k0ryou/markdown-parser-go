@@ -169,6 +169,11 @@ func TestConvertToHTMLString(t *testing.T) {
 			args: args{markdown: "[hoge](#hoge)"},
 			want: "<a href='#hoge'>hoge</a>",
 		},
+		{
+			name: "a_7",
+			args: args{markdown: "hoge\n[hoge](hoge.com)text\n**strong**"},
+			want: "hoge<a href='hoge.com'>hoge</a>text<strong>strong</strong>",
+		},
 	}
 
 	for _, tt := range tests {
