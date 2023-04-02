@@ -15,5 +15,3 @@ GitHub Flavored MarkdownやGitLab Flavored Markdownなど様々な方言が存�
 
 ## 参考サイト
 - [マークダウンパーサを作ろう - エムスリーテックブログ](https://www.m3tech.blog/entry/2021/08/23/124000)
-
-1. # hoge
