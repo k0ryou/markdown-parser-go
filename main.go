@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	inputStr := "__foo, __bar__, baz__"
+	inputStr := "- # header ## hoge"
 	fmt.Println(convertToHTMLString(inputStr))
 }
 

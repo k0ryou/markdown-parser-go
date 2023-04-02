@@ -10,7 +10,7 @@ GitHub Flavored MarkdownやGitLab Flavored Markdownなど様々な方言が存�
 - [x] 強調(strong)
 - [x] 箇条書きリスト(ul)
 - [x] 順序付きリスト(ol)
-- [ ] 見出し
+- [x] 見出し
 - [ ] リンク
 
 ## 参考サイト
