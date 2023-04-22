@@ -1,11 +1,12 @@
 package generator
 
 import (
-	"markdown-parser-go/token"
 	"math"
 	"regexp"
 	"sort"
 	"strings"
+
+	"github.com/k0ryou/markdown-parser-go/token"
 )
 
 const (

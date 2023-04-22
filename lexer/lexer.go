@@ -1,9 +1,10 @@
 package lexer
 
 import (
-	"markdown-parser-go/token"
 	"regexp"
 	"strings"
+
+	"github.com/k0ryou/markdown-parser-go/token"
 )
 
 const (

@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"markdown-parser-go/generator"
-	"markdown-parser-go/lexer"
-	"markdown-parser-go/parser"
-	"markdown-parser-go/token"
 	"net/http"
+
+	"github.com/k0ryou/markdown-parser-go/generator"
+	"github.com/k0ryou/markdown-parser-go/lexer"
+	"github.com/k0ryou/markdown-parser-go/parser"
+	"github.com/k0ryou/markdown-parser-go/token"
 )
 
 type Markdown struct {
