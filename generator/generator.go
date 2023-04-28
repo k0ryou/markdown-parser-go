@@ -1,6 +1,7 @@
 package generator
 
 import (
+	"html"
 	"math"
 	"regexp"
 	"sort"
@@ -50,6 +51,10 @@ func Generate(asts [][]token.Token) string {
 				// 親ノードにマージしたノードを格納
 				rearrangedAst[parIdx] = mergedToken
 			} else { // 親ノードが根である場合
+				if curToken.ElmType != token.MERGED { // XSS対策
+					curToken.Content = html.EscapeString(curToken.Content)
+				}
+
 				// 行ごとの結果に格納
 				lineHtmlStrings = append(lineHtmlStrings, curToken.Content)
 			}
@@ -71,6 +76,10 @@ func Generate(asts [][]token.Token) string {
 
 // curTokenとparTokenを結合したノードを生成する
 func createMergedContent(curToken token.Token, parToken token.Token) string {
+	if parToken.ElmType != token.MERGED { // XSS対策
+		curToken.Content = html.EscapeString(curToken.Content)
+	}
+
 	content := []string{}
 	switch parToken.ElmType {
 	case token.LIST_ITEM:
