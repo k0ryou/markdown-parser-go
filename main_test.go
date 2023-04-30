@@ -31,7 +31,7 @@ func TestConvertToHTMLString(t *testing.T) {
 		{
 			name: "strong_bad2",
 			args: args{markdown: `a**"hoge"**`},
-			want: `a**"hoge"**`,
+			want: `a**&#34;hoge&#34;**`,
 		},
 		{
 			name: "strong_ok2",
@@ -56,7 +56,7 @@ func TestConvertToHTMLString(t *testing.T) {
 		{
 			name: "strong_under_bad3",
 			args: args{markdown: `a__"hoge"__`},
-			want: `a__"hoge"__`,
+			want: `a__&#34;hoge&#34;__`,
 		},
 		{
 			name: "strong_under_bad4",
