@@ -1,6 +1,7 @@
 package lexer
 
 import (
+	"html"
 	"regexp"
 	"strings"
 
@@ -30,6 +31,9 @@ var listRegxpMap = map[token.TokenType]string{
 
 // 指定された内容のTokenを生成する
 func GenElementToken(id int, text string, parent token.Token, elmType token.TokenType) token.Token {
+	if elmType == token.TEXT { // XSS対策
+		text = html.EscapeString(text)
+	}
 	return token.Token{Id: id, Parent: &parent, ElmType: elmType, Content: text}
 }
 
