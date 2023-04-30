@@ -111,6 +111,11 @@ func Analize(markdown string) []string {
 	// 改行ごとに分割
 	rawMdArray := regexp.MustCompile(EOL_REGXP).Split(markdown, -1)
 	for index, md := range rawMdArray {
+		// 置き換えた改行文字を末尾に追加
+		if index != len(rawMdArray)-1 {
+			md = md + "\n"
+		}
+
 		var isUlMatch bool = len(MatchWithListElmRegxp(md, token.UL)) > 0
 		var isOlMatch bool = len(MatchWithListElmRegxp(md, token.OL)) > 0
 

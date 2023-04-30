@@ -16,7 +16,7 @@ func TestConvertToHTMLString(t *testing.T) {
 		{
 			name: "text",
 			args: args{markdown: "text**strong**\n- hoge\n- li\n1. ge"},
-			want: "text<strong>strong</strong><ul><li>hoge</li><li>li</li></ul><ol><li>ge</li></ol>",
+			want: "text<strong>strong</strong>\n<ul><li>hoge</li><li>li</li></ul><ol><li>ge</li></ol>",
 		},
 		{
 			name: "strong_ok1",
@@ -51,7 +51,7 @@ func TestConvertToHTMLString(t *testing.T) {
 		{
 			name: "strong_under_bad2",
 			args: args{markdown: "__\nhoge huga__"},
-			want: "__hoge huga__",
+			want: "__\nhoge huga__",
 		},
 		{
 			name: "strong_under_bad3",
@@ -86,7 +86,7 @@ func TestConvertToHTMLString(t *testing.T) {
 		{
 			name: "list_1",
 			args: args{markdown: "- hoge\n-hoge\n1. hoge\n1.2."},
-			want: "<ul><li>hoge</li></ul>-hoge<ol><li>hoge</li></ol>1.2.",
+			want: "<ul><li>hoge</li></ul>-hoge\n<ol><li>hoge</li></ol>1.2.",
 		},
 		{
 			name: "list_2",
@@ -171,7 +171,7 @@ func TestConvertToHTMLString(t *testing.T) {
 		{
 			name: "a_7",
 			args: args{markdown: "hoge\n[hoge](hoge.com)text\n**strong**"},
-			want: "hoge<a href='hoge.com'>hoge</a>text<strong>strong</strong>",
+			want: "hoge\n<a href='hoge.com'>hoge</a>text\n<strong>strong</strong>",
 		},
 	}
 
